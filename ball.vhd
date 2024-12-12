@@ -40,8 +40,7 @@ ARCHITECTURE Behavioral OF ball IS
 
 -- current ball motion - initialized to +4 pixels/frame
 	--SIGNAL ball_x_motion : STD_LOGIC_VECTOR(10 DOWNTO 0) := "00000000100";
-	SIGNAL ball_y_motion : STD_LOGIC_VECTOR(10 DOWNTO 0) := "00000000100";
-	SIGNAL ball_on : ball_on_array;
+	--SIGNAL ball_y_motion : STD_LOGIC_VECTOR(10 DOWNTO 0) := "00000000100";
 	BEGIN
 		red <= NOT ball_on; -- color setup for red ball on white background
 		green <= '1'; --NOT ball_on;
@@ -61,7 +60,6 @@ ARCHITECTURE Behavioral OF ball IS
 		END IF;
 
 		-- Oval Shape
-
 		IF ((conv_integer(ball_x) - conv_integer(pixel_col))**2 / oval_width**2 +
 			(conv_integer(ball_y) - conv_integer(pixel_row))**2 / oval_height**2
 			<= 1) THEN
@@ -69,10 +67,10 @@ ARCHITECTURE Behavioral OF ball IS
 		ELSE
 			oval_on <= '0';
 		END IF;
-	
+	END PROCESS;
 -- Process to update ball position on every v_sync pulse
-mball : PROCESS
-BEGIN
+    mball : PROCESS
+    BEGIN
 	WAIT UNTIL rising_edge(v_sync);
 	-- Move ball down
 	ball_y <= ball_y + ball_y_motion;
@@ -84,5 +82,4 @@ BEGIN
 END PROCESS;
 
 
-END PROCESS;
 END Behavioral;
