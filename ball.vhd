@@ -5,18 +5,29 @@ USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 ENTITY ball IS
 	PORT 
 	(
+		-- clock
+		clk_50MHz : IN STD_LOGIC; -- system clock (50 Mhz)
+
+		-- screen
 		v_sync : IN STD_LOGIC;
 		pixel_row : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
 		pixel_col : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
 
+		-- Colors
 		red : OUT STD_LOGIC;
 		green : OUT STD_LOGIC;
 		blue : OUT STD_LOGIC
+
+		-- key pad
+		keypad_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
+		keypad_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	);
 END ball;
 
+
 ARCHITECTURE Behavioral OF ball IS
 	-- CONSTANT num_balls : INTEGER := 4;  -- NUMBER of balls
+
 	CONSTANT oval_height : INTEGER := 30;  -- height of oval
 	CONSTANT oval_width : INTEGER := 15;  -- width of oval
 
@@ -33,7 +44,40 @@ ARCHITECTURE Behavioral OF ball IS
 	SIGNAL ball_on : STD_LOGIC; -- indicates whether ball is over current pixel position
 	SIGNAL oval_on : STD_LOGIC;
 
+	-- making a keypad
+	COMPONENT keypad IS
+		PORT
+		(
+			samp_ck : IN STD_LOGIC;
+			col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1);
+			row : IN STD_LOGIC_VECTOR (4 DOWNTO 1);
+			value : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+			hit : OUT STD_LOGIC
+		);
+	END COMPONENT;
 
+	SIGNAL cnt : STD_LOGIC_VECTOR (20 DOWNTO 0);
+	SIGNAL kp_clk, kp_hit, sm_clk : STD_logic;
+	SIGNAL kp_value : STD_LOGIC_VECTOR (3 DOWNTO 0);
+
+	BEGIN
+		ck_proc : PROCESS (clk_50MHz)
+		BEGIN
+			IF rising_edge(clk_50MHz) THEN
+				cnt <= cnt + 1;
+			END IF;
+		END PROCESS;
+
+		kp_clk <= cnt(15);
+		sm_clk <= cnt(20);
+		
+		kp1 : keypad
+
+		PORT MAP(
+			samp_ck => kp_clk, col => keypad_col,
+			row => keypad_row, value => kp_value, hit => kp_hit
+		);
+	END PROCESS;
 -- current ball position - intitialized to center of screen
 	--SIGNAL ball_x : STD_LOGIC_VECTOR(10 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(400, 11);
 	--SIGNAL ball_y : STD_LOGIC_VECTOR(10 DOWNTO 0) := CONV_STD_LOGIC_VECTOR(300, 11);
@@ -43,7 +87,7 @@ ARCHITECTURE Behavioral OF ball IS
 	--SIGNAL ball_y_motion : STD_LOGIC_VECTOR(10 DOWNTO 0) := "00000000100";
 	BEGIN
 		red <= NOT ball_on; -- color setup for red ball on white background
-		green <= '1'; --NOT ball_on;
+		green <= NOT oval_on; --NOT ball_on;
 		blue <= '1'; --NOT ball_on;
 
 
