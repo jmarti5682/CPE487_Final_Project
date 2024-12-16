@@ -22,18 +22,27 @@ END vga_top;
 ARCHITECTURE Behavioral OF vga_top IS
     SIGNAL pxl_clk : STD_LOGIC;
     -- internal signals to connect modules
-    SIGNAL S_red, S_green, S_blue : STD_LOGIC;
-    SIGNAL S_vsync : STD_LOGIC;
+    SIGNAL S_red, S_green, S_blue : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    SIGNAL fin_red, fin_green, fin_blue : STD_LOGIC;
+    SIGNAL S_vsync, kp_clk : STD_LOGIC;
     SIGNAL S_pixel_row, S_pixel_col : STD_LOGIC_VECTOR (10 DOWNTO 0);
-    SIGNAL Note_column : STD_LOGIC_VECTOR(599 downto 0);
+    SIGNAL Note_column1, Note_column2, Note_column3, Note_column4 : STD_LOGIC_VECTOR(599 downto 0);
+    SIGNAL cnt : std_logic_vector(20 DOWNTO 0);
+    SIGNAL keypresses : Std_logic_vector(3 DOWNTO 0);
+    SIGNAL score_out : std_logic_vector(15 DOWNTO 0);
+    SIGNAL hit_signals_out, hit_signals_back : STD_LOGIC_VECTOR(3 DOWNTO 0);
     COMPONENT noteColumn IS
         PORT (
-            clk       : IN STD_LOGIC;
+           	clk       : IN STD_LOGIC;
             v_sync    : IN STD_LOGIC;
             pixel_row : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
             pixel_col : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
             horiz     : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
             note_input: IN STD_LOGIC;
+            hit_signal_in : IN std_logic;
+            color : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            keypress     : IN STD_LOGIC;
+            hit_signal_out : OUT STD_LOGIC;
             note_col_out  : OUT STD_LOGIC_VECTOR(599 DOWNTO 0);
             red       : OUT STD_LOGIC;
             green     : OUT STD_LOGIC;
@@ -56,11 +65,12 @@ ARCHITECTURE Behavioral OF vga_top IS
         );
     END COMPONENT;
 
-    COMPONENT vgaCombiner IS
+    COMPONENT colorCombiner IS
     PORT (
-        red_inputs   : IN STD_LOGIC_VECTOR(7 DOWNTO 0); -- Supports up to 8 columns
-		green_inputs : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-		blue_inputs  : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+        clk          : IN STD_LOGIC;
+        red_inputs   : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Supports up to 8 columns
+		green_inputs : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+		blue_inputs  : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
 		red_out      : OUT STD_LOGIC;
 		green_out    : OUT STD_LOGIC;
 		blue_out     : OUT STD_LOGIC
@@ -75,7 +85,14 @@ END COMPONENT;
         note_col_2   : IN  STD_LOGIC_VECTOR(599 DOWNTO 0); -- Falling notes from column 2
         note_col_3   : IN  STD_LOGIC_VECTOR(599 DOWNTO 0); -- Falling notes from column 3
         note_col_4   : IN  STD_LOGIC_VECTOR(599 DOWNTO 0); -- Falling notes from column 4
-        hit_signals : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Signals to delete notes
+        hit_sigB_1 : IN STD_LOGIC;
+        hit_sigB_2 : IN STD_LOGIC;
+        hit_sigB_3 : IN STD_LOGIC;
+        hit_sigB_4 : IN STD_LOGIC;
+        hit_signal_1 : OUT STD_LOGIC; -- Signal to delete notes
+        hit_signal_2 : OUT STD_LOGIC; -- Signal to delete notes
+        hit_signal_3 : OUT STD_LOGIC; -- Signal to delete notes
+        hit_signal_4 : OUT STD_LOGIC; -- Signal to delete notes
         score        : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) -- Score output
     );
 END COMPONENT;
@@ -110,32 +127,118 @@ END COMPONENT;
 BEGIN
     -- vga_driver only drives MSB of red, green & blue
     -- so set other bits to zero
+    ck_proc : process(clk_in)
+    BEGIN
+    IF rising_edge(clk_in) THEN -- on rising edge of clock
+			cnt <= cnt + 1; -- increment counter
+		END IF;
+    END PROCESS;
     vga_red(1 DOWNTO 0) <= "00";
     vga_green(1 DOWNTO 0) <= "00";
     vga_blue(0) <= '0';
-
-    add_ball : noteColumn
+    
+    kp_clk <= cnt(8);
+    
+    s_red(3 downto 2) <= "11";
+    s_green(3 downto 2) <= "11";
+    s_blue(3 downto 2) <= "11";
+    
+    green_note : noteColumn
     PORT MAP(
         --instantiate ball component
         clk        => clk_in,
         v_sync     => S_vsync, 
         pixel_row  => S_pixel_row, 
         pixel_col  => S_pixel_col, 
-        horiz      => conv_std_logic_vector(200,11),
+        horiz      => conv_std_logic_vector(160,11),
         note_input => bt_clr,
-        note_col_out   => Note_column,
-        red        => S_red, 
-        green      => S_green, 
-        blue       => S_blue
+        hit_signal_in => hit_signals_out(0),
+        note_col_out   => note_column1,
+        color => "011",
+        keypress => keypresses(0),
+        hit_signal_out => hit_signals_back(0),
+        red        => S_red(0), 
+        green      => S_green(0), 
+        blue       => S_blue(0)
     );
-
+    red_note : noteColumn
+    PORT MAP(
+        --instantiate ball component
+        clk        => clk_in,
+        v_sync     => S_vsync, 
+        pixel_row  => S_pixel_row, 
+        pixel_col  => S_pixel_col, 
+        horiz      => conv_std_logic_vector(320,11),
+        note_input => bt_clr,
+        hit_signal_in => '1',
+        note_col_out   => note_column2,
+        color => "100",
+        keypress => keypresses(1),
+        hit_signal_out => hit_signals_back(1),
+        red        => S_red(1), 
+        green      => S_green(1), 
+        blue       => S_blue(1)
+    );
+--    purple_note : noteColumn
+--    PORT MAP(
+--        --instantiate ball component
+--        clk        => clk_in,
+--        v_sync     => S_vsync, 
+--        pixel_row  => S_pixel_row, 
+--        pixel_col  => S_pixel_col, 
+--        horiz      => conv_std_logic_vector(480,11),
+--        note_input => bt_clr,
+--        note_col_out   => Note_column,
+--        color => "101",
+--        keypress => keypresses(2),
+--        red        => S_red(2), 
+--        green      => S_green(2), 
+--        blue       => S_blue(2)
+--    );
+--    blue_note : noteColumn
+--    PORT MAP(
+--        --instantiate ball component
+--        clk        => clk_in,
+--        v_sync     => S_vsync, 
+--        pixel_row  => S_pixel_row, 
+--        pixel_col  => S_pixel_col, 
+--        horiz      => conv_std_logic_vector(640,11),
+--       note_input => bt_clr,
+--        note_col_out   => Note_column,
+--        color => "010",
+--        keypress => keypresses(3),
+--        red        => S_red(3), 
+--        green      => S_green(3), 
+--        blue       => S_blue(3)
+--    );
+    
+    add_keypad : keypad
+    PORT MAP(
+    samp_ck => kp_clk,
+    col => kb_col,
+	row => kb_row,
+	keypress_out => keypresses
+	--hit
+    );
+    
+    vga_combine : colorCombiner
+    PORT MAP(
+        clk => clk_in,
+        red_inputs => S_red, 
+		green_inputs => S_green,
+		blue_inputs => S_blue,
+		red_out => fin_red,  
+		green_out => fin_green,
+		blue_out => fin_blue
+    );
+    
     vga_driver : vga_sync
     PORT MAP(
         --instantiate vga_sync component
         pixel_clk => pxl_clk, 
-        red_in    => S_red, 
-        green_in  => S_green, 
-        blue_in   => S_blue, 
+        red_in    => fin_red, 
+        green_in  => fin_green, 
+        blue_in   => fin_blue, 
         red_out   => vga_red(2), 
         green_out => vga_green(2), 
         blue_out  => vga_blue(1), 
@@ -144,6 +247,26 @@ BEGIN
         hsync     => vga_hsync, 
         vsync     => S_vsync
     );
+    
+    button_track : buttonTracker
+    PORT MAP(
+        clk => clk_in,
+        keypress => keypresses,
+        note_col_1 => note_column1,
+        note_col_2 => note_column2,
+        note_col_3 => (others => '0'),
+        note_col_4 => (others => '0'),
+        hit_signal_1 => hit_signals_out(0),
+        hit_signal_2 => hit_signals_out(1),
+        hit_signal_3 => hit_signals_out(2),
+        hit_signal_4 => hit_signals_out(3),
+        hit_sigB_1 => hit_signals_back(0),
+        hit_sigB_2 => hit_signals_back(1),
+        hit_sigB_3 => '0',
+        hit_sigB_4 => '0',
+        score => score_out
+    );
+    
     vga_vsync <= S_vsync; --connect output vsync
         
     clk_wiz_0_inst : clk_wiz_0

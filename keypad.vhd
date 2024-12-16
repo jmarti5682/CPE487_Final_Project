@@ -13,6 +13,7 @@ END keypad;
 
 ARCHITECTURE Behavioral OF keypad IS
 	SIGNAL CV1, CV2, CV3, CV4 : std_logic_vector (4 DOWNTO 1) := "1111"; -- column vector of each row
+	SIGNAL keypress0, keypress1, keypress2, keypress3 : STD_LOGIC;
 	--SIGNAL Pre_CV1, Pre_CV2, Pre_CV3, Pre_CV4 : std_logic_vector (4 DOWNTO 1) := "1111";
 	SIGNAL curr_col : std_logic_vector (4 DOWNTO 1) := "1110"; -- current column code
 BEGIN
@@ -40,29 +41,63 @@ BEGIN
 			WHEN OTHERS => 
 				curr_col <= "1110";
 		END CASE;
+		
+		keypress_out(0) <= keypress0;
+		keypress_out(1) <= keypress1;
+		keypress_out(2) <= keypress2;
+		keypress_out(3) <= keypress3;
+		
 	END PROCESS;
 	-- This process runs whenever any of the column vectors change. Each vector is tested to see
 	-- if there are any '0's in the vector. This would indicate that a button had been pushed in
 	-- that column. If so, the value of the button is output and the hit signal is assereted. If
 	-- not button is pushed, the hit signal is cleared
-    out_proc : PROCESS (CV1, CV2, CV3, CV4)
+	
+	
+	
+    blue_proc : PROCESS (CV1)
     BEGIN  
         -- Check for each button and set the corresponding keypress bit
         IF CV1(4) = '0' THEN -- Column 1, Row 4 (Button "0")
-            keypress_out(0) <= '1';
-            hit <= '1';   
-        ELSIF CV2(4) = '0' THEN -- Column 2, Row 4 (Button "F")
-            keypress_out(1) <= '1';
-            hit <= '1';   
-        ELSIF CV3(4) = '0' THEN -- Column 3, Row 4 (Button "E")
-            keypress_out(2) <= '1';
-            hit <= '1';
-        ELSIF CV4(4) = '0' THEN -- Column 4, Row 4 (Button "D")
-            keypress_out(3) <= '1';
-            hit <= '1';
+            keypress0 <= '1';
+            --hit <= '1';   
         ELSE 
-            keypress_out <= (OTHERS => '0');
-            hit <= '0';
+            keypress0 <= '0';
+            --hit <= '0';
+        END IF;
+    END PROCESS;
+    
+    red_proc : PROCESS (CV2)
+    BEGIN  
+        IF CV2(4) = '0' THEN -- Column 2, Row 4 (Button "F")
+            keypress1 <= '1';
+           -- hit <= '1';
+        ELSE 
+            keypress1 <= '0';
+           -- hit <= '0';
+        END IF;
+    END PROCESS;
+    
+    green_proc : PROCESS (CV3)
+    BEGIN  
+        -- Check for each button and set the corresponding keypress bit 
+        IF CV3(4) = '0' THEN -- Column 3, Row 4 (Button "E")
+            keypress2 <= '1';
+         --   hit <= '1';
+        ELSE 
+            keypress2 <= '0';
+          --  hit <= '0';
+        END IF;
+    END PROCESS;
+    
+    purple_proc : PROCESS (CV4)
+    BEGIN  
+        IF CV4(4) = '0' THEN -- Column 4, Row 4 (Button "D")
+            keypress3 <= '1';
+          --  hit <= '1';
+        ELSE 
+            keypress3 <= '0';
+          --  hit <= '0';
         END IF;
     END PROCESS;
     
