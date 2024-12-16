@@ -23,9 +23,9 @@ ENTITY noteColumn IS
 END noteColumn;
 
 ARCHITECTURE Behavioral OF notecolumn IS
-	CONSTANT size  : INTEGER := 15;
-	CONSTANT oval_height : INTEGER := 12;  -- height of oval
-	CONSTANT oval_width : INTEGER := 22;  -- width of oval
+	CONSTANT size  : INTEGER := 30;
+	CONSTANT oval_height : INTEGER := 15;  -- height of oval
+	CONSTANT oval_width : INTEGER := 45;  -- width of oval
 	SIGNAL note_on : STD_LOGIC; -- indicates whether ball is over current pixel position
 	SIGNAL note_col : STD_LOGIC_VECTOR(599 DOWNTO 0) := (OTHERS => '0');
 	-- current ball position - intitialized to center of screen
@@ -97,7 +97,7 @@ BEGIN
     BEGIN
         WAIT UNTIL rising_edge(clk);
             counter <= counter + 1;
-            local_clk <= counter(19);
+            local_clk <= counter(18);
     END PROCESS;
             
     -- process to move note at some division of the clock speed (i.e. once every vsync pulse)
