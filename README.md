@@ -63,9 +63,19 @@ The main goal of this project was to create a Guitar Hero-style rhythm game usin
 ## Attachments and Requirements
   * Nexys A7 Board 100T
     
-      ![board](images/100t.png)
+  <img src="images/100t.png" alt="Nexys A7 Board 100T" width="300"/>
+  
   * VGA Cable
+    
+  <img src="images/vga.png" alt="VGA cable" width="300"/>
+  
   * Keypad Module
+    
+  <img src="images/keypad.png" alt="keypad" width="300"/>
+
   * Micro USB Cable (Used for power)
+    
+  <img src="images/microusb.jpg" alt="microusb" width="300"/> 
+  
   * AMD Vivado™ Design Suite 
 
