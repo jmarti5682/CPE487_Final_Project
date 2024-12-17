@@ -175,8 +175,9 @@ END vga_top;
  - SEG7_anode: Controls the anodes of the 7-segment displays
  - SEG7_seg: Controls the segments of the 7-segment display
  - KB_col: keypad column signals, used to scan for keypresses on the keypad
+   
 
-### 'ball.vhd'
+### `ball.vhd`
 ```
 ENTITY noteColumn IS
 	PORT (
@@ -197,4 +198,21 @@ ENTITY noteColumn IS
 	);
 END noteColumn;
 ```
+#### Inputs
+ - clk: System Clock
+ - v_sync: vertical sync signal
+ - pixel_row: current row pixel position of VGA
+ - pixel_col: current column pixel position of VGA
+ - horiz: Horitzontal position where note column is drawn
+ - note_input: Input signal indicating a new note should be created
+ - hit_signal_in: Input signal indicating the note was successfully hit
+ - color: Input color value for the note and note column
+ - keypress: Input signal indicating that the user pressed the key/button
+
+#### Outputs
+ - hit_signal_out: Output signal indicating the note was hit and cleared
+ - note_col_out: Vector output representing the state of the note column
+ - red: Red color signal
+ - green: Green color signal
+ - blue: Blue color signal
 
