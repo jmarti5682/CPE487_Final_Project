@@ -216,3 +216,21 @@ END noteColumn;
  - green: Green color signal
  - blue: Blue color signal
 
+### `buttonTracker.vhd`
+```
+entity buttonTracker is
+    PORT (
+        clk          : IN  STD_LOGIC;
+        reset        : IN  STD_LOGIC;
+        keypress     : IN  STD_LOGIC; -- 4 keypad inputs
+        note_col_1   : IN  STD_LOGIC_VECTOR(599 DOWNTO 0); -- Falling notes from column 1
+        hit_sigB_1 : IN STD_LOGIC;
+        hit_signal_1 : OUT STD_LOGIC; -- Signal to delete notes
+        score        : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) -- Score output
+    );
+end buttonTracker;
+```
+#### Inputs
+
+
+#### Outputs
