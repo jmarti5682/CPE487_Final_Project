@@ -772,4 +772,55 @@ flowchart TD
 
     kb_col(Keypad Columns) --> keypad
     kb_row(Keypad Rows) --> keypad
+```
+
+## 9. Responsibilities
+
+**Caleb Romero:**
+ * Design of Process
+ * Designed buttonTracker.vhd
+ * Designed vgaCombiner.vhd
+
+**Jose Martinez-Ponce:**
+ * GitHub Write Up
+ * Designed songMap.vhd
+
+The rest of the work was joint effort as both collaborated in making each file.
+
+### Timeline:
+
+* Friday 12/13:
+  - Design of Guitar Hero was Mapped Out
+  - Sudo Code of Guitar Hero logic was created
+* Saturday 12/14:
+  - Basic changes made to the lab 3
+ * Sunday 12/15
+   - Majority of files created and implement into main header file
+ * Monday 12/16
+   - Attempts to fix bugs, realization that total re-work needs to be done
+
+## 10. Difficulties and Improvements
+
+Since there was no clear example or reference on how to approach this specific task, we had to rely heavily on our design intuition.
+
+#### 1. Lack of Clear Design Direction
+* Difficulty: Unlike structured labs or tutorials, there were no predefined examples for building a Guitar Hero-style game.
+* Improvement: We realized that starting with a finite state machine (FSM) approach would have been far more effective. An FSM could simplify note movement, hit detection, and overall game flow, reducing the need for excessive logical checks.
+
+### 2. Over-Reliance on Internal Logic
+* Difficulty: Much of our project relied on logical checks implemented through nested if statements. While this approach worked, it was not efficient and introduced unnecessary complexity.
+* Improvement: By adopting FSM-based logic or modularized signal control, we could have distributed responsibilities cleanly across components, leading to more readable and maintainable code.
+
+### 3. Clock Synchronization Issues
+* Difficulty: Synchronizing clocks across various components was particularly challenging. Each part of the game (note movement, VGA output, keypad input, and scoring) required precise timing, and mismatches in clock domains caused glitches or unexpected behavior.
+* Improvement: Future designs should prioritize using a single clock domain with clock dividers for components operating at lower frequencies.
+
+### 4. Complicated Use of std_logic_vector
+* Difficulty: Initially, we believed std_logic_vector would allow us to scale the design more easily by managing signals compactly. However, the heavy reliance on vectors added complexity, particularly during debugging and when manipulating specific bits.
+* Improvement: A simpler approach of manually creating dedicated signals for each note column would have made the program less error-prone and easier to manage. While this requires more lines of code, it improves clarity.
+
+### 5. Managing Multiple Moving Parts
+* Difficulty: Handling multiple note columns, player inputs, scoring systems, and VGA output in parallel was overwhelming. Debugging and isolating issues across these "moving parts" consumed significant time.
+* Improvement: We recommend a "one-beat" approach for future iterations. This involves focusing on a single input and note hit for one column, ensuring the basic functionality works perfectly before scaling it up to additional columns.
+
 
