@@ -256,3 +256,38 @@ ENTITY colorCombiner IS
 END colorCombiner;
 ```
 #### Inputs
+ - clk: System Clock
+ - red_inputs: 4-bit input for red color channels
+ - green_inputs: 4-bit input for green color channels
+ - blue_inputs: 4-bit input for blue color channels
+
+#### Outputs
+ - red_out: Combined red output color
+ - green_out: Combined green output color
+ - blue_out: Combined blue output color
+
+
+### `songMap`
+```
+ENTITY songMap IS
+    GENERIC (
+        song_map : STD_LOGIC_VECTOR(599 DOWNTO 0) -- Song map for the column
+    );
+    PORT (
+        clk          : IN  STD_LOGIC;  -- Clock input
+        reset        : IN  STD_LOGIC;  -- Reset signal to restart the song
+        song_pointer : OUT INTEGER RANGE 0 TO 599; -- Current pointer in the song map
+        note_active  : OUT STD_LOGIC   -- Indicates if a note is active at the current pointer
+    );
+END songMap;
+```
+#### Inputs
+ - clk: System Clock
+ - reset: Reset signal to restart the song pointer back to the beginning
+
+#### Outputs
+ - song_pointer: Indicates the current position/pointer in the `song_map`
+ - note_active: Indicates whether a note is active at the current pointer position
+
+#### Generics
+ - song_map: A 600-bit vector representing the song map for a single note column. Each bit corresponds to a note position
