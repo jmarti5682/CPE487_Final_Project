@@ -131,3 +131,70 @@ Once you have downloaded those files, follow these steps:
 ## 5. Modules
 
 ![module](/images/module.png)
+
+## 6. Inputs and Outputs
+
+### `vga_top.vhd`
+```
+ENTITY vga_top IS
+    PORT (
+        clk_in    : IN STD_LOGIC;
+        vga_red   : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+        vga_green : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
+        vga_blue  : OUT STD_LOGIC_VECTOR (1 DOWNTO 0);
+        vga_hsync : OUT STD_LOGIC;
+        vga_vsync : OUT STD_LOGIC;
+        SEG7_anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- anodes of eight 7-seg displays
+    		SEG7_seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0); -- common segments of 7-seg displays
+    		bt_clr : IN STD_LOGIC; -- calculator "clear" button
+    		bt_strt : IN STD_LOGIC;
+    		bt_strt1 : IN STD_LOGIC;
+    		bt_strt2 : IN STD_LOGIC;
+    		bt_strt3 : IN STD_LOGIC;
+        KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
+	      KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1) -- keypad row pins
+    );
+END vga_top;
+```
+
+#### Inputs
+- clk_in: System Clock
+- bt_clr: Center button input, meant to restart the game
+- bt_strt: Left button input, spawns note for first column
+- bt_strt1: Down button input, spawns note for second column
+- bt_strt2: Right button input, spawns note for third column
+- bt_strt3: Up button input, spawns note for fourth column
+- KB_row: Keypad row signals, used for detecting user input on the keypad
+
+#### Outputs
+ - vga_red: VGA singal controlling the **red** color inensity for the display
+ - vga_green: VGA singal controlling the **green** color intensity for the display
+ - vga_blue: VGA signal controlling the **blue** color intensity for the display
+ - vga_hsync: Horiztonal sync signal for the VGA display
+ - vga_vsync: Vertical sync signal for the VGA display
+ - SEG7_anode: Controls the anodes of the 7-segment displays
+ - SEG7_seg: Controls the segments of the 7-segment display
+ - KB_col: keypad column signals, used to scan for keypresses on the keypad
+
+### 'ball.vhd'
+```
+ENTITY noteColumn IS
+	PORT (
+	    clk       : IN STD_LOGIC;
+		v_sync    : IN STD_LOGIC;
+		pixel_row : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
+		pixel_col : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
+		horiz     : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
+		note_input: IN STD_LOGIC;
+		hit_signal_in : IN std_logic;
+		color : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+		keypress     : IN STD_LOGIC;
+		hit_signal_out : OUT STD_LOGIC;
+		note_col_out  : OUT STD_LOGIC_VECTOR(599 DOWNTO 0);
+		red       : OUT STD_LOGIC;
+		green     : OUT STD_LOGIC;
+		blue      : OUT STD_LOGIC
+	);
+END noteColumn;
+```
+
