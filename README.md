@@ -1,4 +1,4 @@
-# CPE487: Final_Project
+# CPE487: Final_Project - Guitar Hero
 **By: Caleb Romero and Jose Martinez-Ponce** 
 
 A guitar hero style game done on a FPGA device via VHDL
@@ -14,6 +14,17 @@ The main goal of this project was to create a Guitar Hero-style rhythm game usin
 <img src="images/IMG_8287.gif" alt="gameplay" width="500"/>
 
 ***This is still a work in progress***
+
+How to Play:
+* Due to the early stage of the game, notes have to be manually spawned in
+* Use the bottom row of the keypad to 'hit' notes
+  - 0, F, E, D for each respective column
+* To spawn manual note use:
+  - BTNL, BTND, BTNR, BTNU
+ 
+<img src="images/IMG_8287.gif" alt="gameplay" width="500"/>
+ 
+#### NOTE: ONLY THE FIRST TWO COLUMNS WORK AS OF THIS MOMENT
 
 ### Key Aspects of Guitar Hero:
 
