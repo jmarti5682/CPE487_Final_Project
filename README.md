@@ -231,6 +231,28 @@ entity buttonTracker is
 end buttonTracker;
 ```
 #### Inputs
-
+ - clk: System Clock
+ - reset: Reset Signal to clear the score and reset internal states
+ - keypress: Indicates if a button/key on the keypad has been pressed
+ - note_col_1: Falling notes in column X, represented as a vector of 600 bits
+ - hit_sigB_1: Signal indicating a hit event, which clears a note in the falling column
 
 #### Outputs
+ - hit_signal_1: Output signal to delete notes in column X after a successful hit
+ - score: Current score output as a 32-bit vector, updated upon successful hits
+
+### `vgaCombiner.vhd`
+```
+ENTITY colorCombiner IS
+	PORT (
+		clk : IN STD_LOGIC;
+		red_inputs   : IN STD_LOGIC_VECTOR(3 DOWNTO 0); -- Supports up to 8 columns
+		green_inputs : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+		blue_inputs  : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+		red_out      : OUT STD_LOGIC;
+		green_out    : OUT STD_LOGIC;
+		blue_out     : OUT STD_LOGIC
+	);
+END colorCombiner;
+```
+#### Inputs
