@@ -301,7 +301,8 @@ The note funtionally behind our program was based off `ball.vhd` from lab 3. We 
 We removed the logic of bouncing off the bottom of the screen, as we just wanted to have a note to fall downward only. 
 
 #### Modified Code: 
-
+#### Changes: 
+*Modified:* We added a check for falling notes based on column position (`hotiz`) and a vector (`note_col`) representing note activity in the song. 
 ```
 -- Determine if the current pixel aligns with a falling note position
 ndraw : PROCESS (note_input, note_col, pixel_row, pixel_col)
@@ -327,9 +328,9 @@ BEGIN
     END IF;
 END PROCESS;
 ```
-#### Changes: 
-*Modified:* We added a check for falling notes based on column position (`hotiz`) and a vector (`note_col`) representing note activity in the song. 
 
+#### Changes: 
+*Modified:* Notes move downward continuously by shifting the `note_col` vector. New notes can be added at the top, and notes are deleted when a hit signal is recieved. 
 ```
 mcolumn : PROCESS(local_clk)
 BEGIN
@@ -353,8 +354,9 @@ BEGIN
     END IF;
 END PROCESS;
 ```
+
 #### Changes: 
-*Modified:* Notes move downward continuously by shifting the `note_col` vector. New notes can be added at the top, and notes are deleted when a hit signal is recieved. 
+*Modified:* Notes can have dynamic colors using an input `color` vector, and feedback is provided for a keypress (note turns black).
 
 ```
 IF note_on = '0' THEN
@@ -376,5 +378,117 @@ IF keypress = '1' AND condition THEN
     blue <= '0';
 END IF;
 ```
+
+### `leddec16.vhd`
+
+We modified `leddec16` from lab_6 to expand its functionality from supporting 4 digits to 8 digits.  Other than that, nothing else was changed. 
+
+#### Modified Code: 
+
 #### Changes: 
-*Modified:* Notes can have dynamic colors using an input `color` vector, and feedback is provided for a keypress (note turns black).
+*Modified:* The `data` input was expanded from 16 bits (4 digits) to 32 bits (8 digits)
+```
+data : IN STD_LOGIC_VECTOR (31 DOWNTO 0); -- 32-bit (8-digit) data
+```
+
+#### Changes: 
+*Modified:* The digit selection logic again was extended to handle 8 digits
+```
+data4 <= data(3 DOWNTO 0) WHEN dig = "000" ELSE -- digit 0
+         data(7 DOWNTO 4) WHEN dig = "001" ELSE -- digit 1
+         data(11 DOWNTO 8) WHEN dig = "010" ELSE -- digit 2
+         data(15 DOWNTO 12) WHEN dig = "011" ELSE -- digit 3
+         data(19 DOWNTO 16) WHEN dig = "100" ELSE -- digit 4
+         data(23 DOWNTO 20) WHEN dig = "101" ELSE -- digit 5
+         data(27 DOWNTO 24) WHEN dig = "110" ELSE -- digit 6
+         data(31 DOWNTO 28); -- digit 7
+```
+
+
+#### Changes: 
+*Modified:* The `anode` output logic was expanded to control 8 digits
+```
+anode <= "11111110" WHEN dig = "000" ELSE -- 0
+         "11111101" WHEN dig = "001" ELSE -- 1
+         "11111011" WHEN dig = "010" ELSE -- 2
+         "11110111" WHEN dig = "011" ELSE -- 3
+         "11101111" WHEN dig = "100" ELSE -- 4
+         "11011111" WHEN dig = "101" ELSE -- 5
+         "10111111" WHEN dig = "110" ELSE -- 6
+         "01111111" WHEN dig = "111" ELSE -- 7
+         "11111111";
+```
+
+### `keypad.vhd`
+
+In our modified version of `keypad.vhd` from lab 4, we added the ability to detect individual keypress outputs for notes.
+
+#### Modified Code:
+#### Changes: 
+*Modified:* We added in a new signal `keypress_out` to track the output of inidividual bits for specific keys
+```
+keypress_out : OUT STD_LOGIC_VECTOR (3 DOWNTO 0); -- keypresses for notes
+```
+
+#### Changes: 
+*Modified:* The logic was split into separate processes for detecting specific keys: Where: 
+
+	 `keypress0` for button `0`
+ 	 `keypress1` for button `F`
+  	 `keypress2` for button `E`
+   	 `keypress3` for button `D`
+    
+* This allows for modular handing of key detection
+```
+blue_proc : PROCESS (CV1)
+BEGIN  
+    IF CV1(4) = '0' THEN -- Column 1, Row 4 (Button "0")
+        keypress0 <= '1';
+    ELSE 
+        keypress0 <= '0';
+    END IF;
+END PROCESS;
+
+red_proc : PROCESS (CV2)
+BEGIN  
+    IF CV2(4) = '0' THEN -- Column 2, Row 4 (Button "F")
+        keypress1 <= '1';
+    ELSE 
+        keypress1 <= '0';
+    END IF;
+END PROCESS;
+
+green_proc : PROCESS (CV3)
+BEGIN  
+    IF CV3(4) = '0' THEN -- Column 3, Row 4 (Button "E")
+        keypress2 <= '1';
+    ELSE 
+        keypress2 <= '0';
+    END IF;
+END PROCESS;
+
+purple_proc : PROCESS (CV4)
+BEGIN  
+    IF CV4(4) = '0' THEN -- Column 4, Row 4 (Button "D")
+        keypress3 <= '1';
+    ELSE 
+        keypress3 <= '0';
+    END IF;
+END PROCESS;
+```
+
+#### Changes: 
+*Modified:* The `hit` signal is no longer needed because the inidivudal `keypress_out` bits are now used to signal note presses.
+```
+-- hit <= '1'; (Commented Out)
+```
+
+#### Changes: 
+*Modified:* This makes sures that `keypress_out` reflects the individual keypress signals in real time
+```
+keypress_out(0) <= keypress0;
+keypress_out(1) <= keypress1;
+keypress_out(2) <= keypress2;
+keypress_out(3) <= keypress3;
+```
+
