@@ -97,5 +97,33 @@ In order to run and implement the project successfully, the following hardware a
     
   <img src="images/microusb.jpg" alt="microusb" width="300"/> 
   
-  * AMD Vivado™ Design Suite 
+  * AMD Vivado™ Design Suite
 
+## 4. Setup
+
+Download the following files from the repo to your computer:
+* `ball.vhd`
+* `buttonTracker.vhd`
+* `clk_wiz_0.vhd`
+* `clk_wiz_0_clk_wiz.vhd`
+* `keypad.vhd`
+* `leddec16.vhd`
+* `songMap.vhd`
+* `vgaCombiner.vhd`
+* `vga_sync.vhd`
+* `vga_top.vhd`
+* `vga_top.xdc`
+
+Once you have downloaded those files, follow these steps:
+1. Open **AMD Vivado™ Design Suite** and create a new project
+2. Add all the `.vhd` files into the source section
+3. Add `vga_top.xdc` into the constraints section
+4. Choose Nexys A7-100T board
+5. Run Synthesis
+6. Run the implementation
+7. Generate the bitstream
+8. Open Hardware manager
+    - `Open Target`
+    - `Auto Connect`
+    - `Program Device`
+9. Start to manually spawn in notes and "catch" them
