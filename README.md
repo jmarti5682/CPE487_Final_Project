@@ -60,7 +60,10 @@ The main goal of this project was to create a Guitar Hero-style rhythm game usin
 
 * Correct inputs increase the score, while missed notes break the combo multiplier.
 
-## Attachments and Requirements
+## 3. Attachments and Requirements
+
+In order to run and implement the project successfully, the following hardware and software is required:
+
   * Nexys A7 Board 100T
     
   <img src="images/100t.png" alt="Nexys A7 Board 100T" width="300"/>
