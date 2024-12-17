@@ -130,4 +130,4 @@ Once you have downloaded those files, follow these steps:
 
 ## 5. Modules
 
-
+<img src="images/module.png" alt="module" width="1000"/>
