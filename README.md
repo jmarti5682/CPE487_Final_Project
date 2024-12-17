@@ -291,3 +291,90 @@ END songMap;
 
 #### Generics
  - song_map: A 600-bit vector representing the song map for a single note column. Each bit corresponds to a note position
+
+## 7. Modifications
+
+### `ball.vhd`
+
+The note funtionally behind our program was based off `ball.vhd` from lab 3. We have modified `ball.vhd` to be anything from a bouncing ball, as we  generalized it to become falling notes. Instead of just one "ball" bouncing vertically, the logic was futher extended to handle falling notes from the top of the screen to the bottom. In addition, this allowed to have notes appear at fixed horizontal positions (columns) and move downwards. As well, we also changed the logic on how color is assigned to the ball.
+
+We removed the logic of bouncing off the bottom of the screen, as we just wanted to have a note to fall downward only. 
+
+#### Modified Code: 
+
+```
+-- Determine if the current pixel aligns with a falling note position
+ndraw : PROCESS (note_input, note_col, pixel_row, pixel_col)
+BEGIN
+    IF note_input = '1' THEN
+        new_note <= '1';
+    ELSE
+        new_note <= '0';
+    END IF;
+
+    IF pixel_col >= horiz - size AND
+       pixel_col <= horiz + size THEN
+        FOR i IN 0 TO 14 LOOP
+            IF CONV_INTEGER(pixel_row) + i - 7 >= 0 AND
+               CONV_INTEGER(pixel_row) + i - 7 < 600 AND
+               note_col(CONV_INTEGER(pixel_row) + i - 7) = '1' THEN
+                note_on <= '1';
+                EXIT;
+            END IF;
+        END LOOP;
+    ELSE
+        note_on <= '0';
+    END IF;
+END PROCESS;
+```
+#### Changes: 
+*Modified:* We added a check for falling notes based on column position (`hotiz`) and a vector (`note_col`) representing note activity in the song. 
+
+```
+mcolumn : PROCESS(local_clk)
+BEGIN
+    IF rising_edge(local_clk) THEN  
+        -- Shift note positions down by 1
+        note_col(599 DOWNTO 1) <= note_col(598 DOWNTO 0);
+        
+        IF new_note = '1' THEN
+            note_col(0) <= '1'; -- Add a new note at the top
+        ELSE
+            note_col(0) <= '0';
+        END IF;
+
+        -- Delete notes if hit signal is received
+        IF hit_signal_in = '1' THEN
+            note_col(580 DOWNTO 550) <= (OTHERS => '0');
+            hit_signal_out <= '1';
+        ELSE
+            hit_signal_out <= '0';
+        END IF;
+    END IF;
+END PROCESS;
+```
+#### Changes: 
+*Modified:* Notes move downward continuously by shifting the `note_col` vector. New notes can be added at the top, and notes are deleted when a hit signal is recieved. 
+
+```
+IF note_on = '0' THEN
+    red <= '1';
+    green <= '1';
+    blue <= '1';
+END IF;
+
+IF note_on = '1' THEN
+    red <= color(2);
+    green <= color(1);
+    blue <= color(0);
+END IF;
+
+-- Visual feedback for keypress
+IF keypress = '1' AND condition THEN
+    red <= '0';
+    green <= '0';
+    blue <= '0';
+END IF;
+```
+#### Changes: 
+*Modified:* Notes can have dynamic colors using an input `color` vector, and feedback is provided for a keypress (note turns black).
