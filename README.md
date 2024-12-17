@@ -1,4 +1,6 @@
-# CPE487_Final_Project
+# CPE487: Final_Project
+**By: Caleb Romero and Jose Martinez-Ponce** 
+
 A guitar hero style game done on a FPGA device via VHDL
 
 
@@ -58,5 +60,11 @@ The main goal of this project was to create a Guitar Hero-style rhythm game usin
 
 * Correct inputs increase the score, while missed notes break the combo multiplier.
 
-
+## Attachments and Requirements
+  * Nexys A7 Board 100T
+    - 
+  * VGA Cable
+  * Keypad Module
+  * Micro USB Cable (Used for power)
+  * AMD Vivado™ Design Suite 
 
