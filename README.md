@@ -22,7 +22,7 @@ How to Play:
 * To spawn manual note use:
   - BTNL, BTND, BTNR, BTNU
  
-<img src="images/IMG_8287.gif" alt="gameplay" width="500"/>
+<img src="images/IMG_8289.gif" alt="gameplay" width="500"/>
  
 #### NOTE: ONLY THE FIRST TWO COLUMNS WORK AS OF THIS MOMENT
 
