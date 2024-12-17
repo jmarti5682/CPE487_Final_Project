@@ -127,3 +127,7 @@ Once you have downloaded those files, follow these steps:
     - `Auto Connect`
     - `Program Device`
 9. Start to manually spawn in notes and "catch" them
+
+## 5. Modules
+
+<img src="images/module.png" alt="module" width="1000"/> 
