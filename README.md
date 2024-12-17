@@ -9,6 +9,12 @@ A guitar hero style game done on a FPGA device via VHDL
 
 The main goal of this project was to create a Guitar Hero-style rhythm game using the Nexys A7 board, VGA display, and a keypad module to simulate guitar inputs. The project aimed to replicate core aspects of Guitar Hero, including note timing, input detection, scoring, and combo multipliers.
 
+### Dummy Gameplay
+
+<img src="images/IMG_8287.gif" alt="gameplay" width="500"/>
+
+***This is still a work in progress***
+
 ### Key Aspects of Guitar Hero:
 
 #### Notes Falling on the Screen:
