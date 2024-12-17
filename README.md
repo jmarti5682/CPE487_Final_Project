@@ -62,7 +62,8 @@ The main goal of this project was to create a Guitar Hero-style rhythm game usin
 
 ## Attachments and Requirements
   * Nexys A7 Board 100T
-    - 
+    
+      ![board](images/100t.png)
   * VGA Cable
   * Keypad Module
   * Micro USB Cable (Used for power)
