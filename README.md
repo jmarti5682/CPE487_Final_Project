@@ -555,11 +555,43 @@ set_property -dict {PACKAGE_PIN J18 IOSTANDARD LVCMOS33} [get_ports {SEG7_anode[
 set_property -dict {PACKAGE_PIN J17 IOSTANDARD LVCMOS33} [get_ports {SEG7_anode[0]}]
 ```
 
-## 8. Main Process and Sub Processes
+## 8. Main Process and Sub Processes + Block Diagram
 
 ### `vga_top.vhd`
 
 The vga_top entity serves as the top-level module that inegrates all the components of the Guitar Hero game. This module connects VGA output, keypad input, note columns, scoring system, and a 7-segment display to create a final design. 
+
+### Clock Division Process
+ - The clock signal was divided using the `cnt` counter
+ - Updates the combined score by taking a sum of all note columns
+ - Combines color outputs from each note column
+
+```
+ck_proc : process(clk_in)
+BEGIN
+    IF rising_edge(clk_in) THEN
+        cnt <= cnt + 1; -- Increment the counter for timing
+        total_score <= blue_score + red_score + green_score + purple_score; -- Sum of all scores
+
+        -- Combine signals from note columns into the color combiner
+        s_red(0) <= s_red1;
+        s_red(1) <= s_red2;
+        s_red(2) <= s_red3;
+        s_red(3) <= s_red4;
+
+        s_green(0) <= s_green1;
+        s_green(1) <= s_green2;
+        s_green(2) <= s_green3;
+        s_green(3) <= s_green4;
+
+        s_blue(0) <= s_blue1;
+        s_blue(1) <= s_blue2;
+        s_blue(2) <= s_blue3;
+        s_blue(3) <= s_blue4;
+    END IF;
+END PROCESS;
+
+```
 
 ### Note Columns Instantiations
 
@@ -588,6 +620,87 @@ PORT MAP(
     blue       => S_blue1
 );
 ```
+### Keypad Integration 
+ - Reads user input from the keypad
+ - Outputs keypresses
+ - Used for real-time note hit detection
+
+```
+add_keypad : keypad
+PORT MAP(
+    samp_ck => kp_clk,
+    col => kb_col,
+    row => kb_row,
+    keypress_out => keypresses
+);
+
+```
+
+### Score Display Integration
+ - Displays the combined score on the 7-segment displays
+ - `cnt` cycles through the digits to multiplex the display
+```
+display : leddec16
+PORT MAP(
+    dig => cnt(19 downto 17),
+    data => total_score,
+    anode => SEG7_anode,
+    seg => SEG7_seg
+);
+
+```
+### Combining Colors
+ - Combines the RGB signals from all note columns into a final color output
+```
+vga_combine : colorCombiner
+PORT MAP(
+    clk => clk_in,
+    red_inputs => S_red,
+    green_inputs => S_green,
+    blue_inputs => S_blue,
+    red_out => fin_red,
+    green_out => fin_green,
+    blue_out => fin_blue
+);
+
+```
+Generates VGA signals for the display, displays combined note outputs on the VGA screen. 
+
+```
+vga_driver : vga_sync
+PORT MAP(
+    pixel_clk => pxl_clk,
+    red_in    => fin_red,
+    green_in  => fin_green,
+    blue_in   => fin_blue,
+    red_out   => vga_red(2),
+    green_out => vga_green(2),
+    blue_out  => vga_blue(1),
+    pixel_row => S_pixel_row,
+    pixel_col => S_pixel_col,
+    hsync     => vga_hsync,
+    vsync     => S_vsync
+);
+
+```
+
+### Button Tracking for Scoring
+ - Detects when a user presses the correct key at the correct time
+ - Outputs a score signal and hit detection signal
+```
+green_button_track : buttonTracker
+PORT MAP(
+    clk => clk_in,
+    reset => bt_clr,
+    keypress => keypresses(0),
+    note_col_1 => note_column1,
+    hit_sigB_1 => hit_signals_back(0),
+    hit_signal_1 => hit_signals_out(0),
+    score => green_score
+);
+
+```
+
 ### Block Diagram of `vga_top`
 
 ```mermaid
